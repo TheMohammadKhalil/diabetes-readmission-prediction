@@ -1,7 +1,7 @@
 # Explaining and presenting the project
 
-Use `results/report.md` and the notebook as the starting point. The included report
-is generated from measured results; revise its discussion in your own words.
+Start with [the project paper](project_paper.pdf), `results/report.md`, and the
+notebook. Read the discussion and make sure your group can explain the measured results.
 
 ## Suggested paper structure
 

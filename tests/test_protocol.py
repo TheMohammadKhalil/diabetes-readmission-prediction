@@ -1,5 +1,3 @@
-"""Regression checks for errors that could invalidate the experiment."""
-
 import numpy as np
 import pandas as pd
 import pytest
@@ -88,7 +86,7 @@ def test_preprocessing_does_not_learn_validation_values():
     test = pd.DataFrame({"count": [1000.], "category": ["test-only"]})
     processor = make_preprocessor()
     processor.fit(train)
-    processor.transform(test)  # Unseen categories must not crash prediction.
+    processor.transform(test)
     scaler = processor.named_transformers_["numeric"].named_steps["scale"]
     encoder = processor.named_transformers_["categorical"].named_steps["encode"]
     assert scaler.mean_[0] == 1

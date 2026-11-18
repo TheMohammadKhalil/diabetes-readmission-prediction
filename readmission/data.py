@@ -1,5 +1,3 @@
-"""Download, validate, and prepare the UCI encounter records."""
-
 import hashlib
 import io
 import json
@@ -15,7 +13,7 @@ DATA_URL = (
     "https://archive.ics.uci.edu/static/public/296/"
     "diabetes+130-us+hospitals+for+years+1999-2008.zip"
 )
-EXCLUDED_DISCHARGES = {11, 13, 14, 19, 20, 21}  # Death or hospice; see IDS_mapping.csv.
+EXCLUDED_DISCHARGES = {11, 13, 14, 19, 20, 21}
 NUMERIC_COLUMNS = [
     "time_in_hospital", "num_lab_procedures", "num_procedures", "num_medications",
     "number_outpatient", "number_emergency", "number_inpatient", "number_diagnoses",
@@ -38,7 +36,6 @@ RAW_FEATURES = NUMERIC_COLUMNS + CATEGORICAL_COLUMNS
 
 
 def download_data(directory="data/raw"):
-    """Fetch only the two known CSV members; reuse an existing local data file."""
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     target = directory / "diabetic_data.csv"
@@ -60,7 +57,6 @@ def download_data(directory="data/raw"):
 
 
 def load_data(path):
-    # Pandas otherwise treats the literal lab value "None" as missing.
     df = pd.read_csv(path, keep_default_na=False, na_values=["?", ""], low_memory=False)
     required = set(RAW_FEATURES + ["encounter_id", "patient_nbr", "readmitted"])
     missing = required - set(df.columns)
@@ -76,19 +72,17 @@ def load_data(path):
 
 
 def clean_cohort(df):
-    """Use fixed proposal eligibility rules, without learning from the labels."""
     discharge = pd.to_numeric(df.discharge_disposition_id, errors="raise")
     return df.loc[~discharge.isin(EXCLUDED_DISCHARGES)].copy().reset_index(drop=True)
 
 
 def diagnosis_group(value):
-    """Strack et al. broad ICD-9 groups, extended to all three diagnoses."""
     if pd.isna(value) or str(value).strip() in {"", "?"}:
         return "Missing"
     try:
         code = float(value)
     except (ValueError, TypeError):
-        return "Other"  # E and V codes are not ordinary numerical diagnoses.
+        return "Other"
     if 250 <= code < 251:
         return "Diabetes"
     for low, high, special, label in [
@@ -106,7 +100,6 @@ def diagnosis_group(value):
 
 
 def make_features(df):
-    """Row-local transformations only. Imputation/scaling/encoding live in pipelines."""
     X = df[RAW_FEATURES].copy()
     X = X.replace({"?": np.nan, "": np.nan})
     X = X.drop(columns=["weight", "examide", "citoglipton"])
@@ -123,13 +116,11 @@ def make_features(df):
     for col in ("admission_type_id", "discharge_disposition_id", "admission_source_id"):
         X[col] = pd.to_numeric(X[col], errors="raise").astype("Int64")
     for col in X.columns.difference(numeric):
-        # The three admission/discharge IDs are categories, not quantities.
         X[col] = X[col].map(lambda value: str(value) if pd.notna(value) else np.nan)
     return X
 
 
 def make_splits(X, y, groups, seed=42, folds=5):
-    """One fixed outer fold is ~20% test; grouped CV uses only the other ~80%."""
     outer = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=seed)
     train_idx, test_idx = next(outer.split(X, y, groups))
     if set(groups.iloc[train_idx]) & set(groups.iloc[test_idx]):

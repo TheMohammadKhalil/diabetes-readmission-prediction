@@ -1,5 +1,3 @@
-"""Run the entire course experiment: python run_experiment.py."""
-
 import argparse
 import hashlib
 import json
@@ -29,7 +27,6 @@ def write_json(path, obj):
 
 
 def markdown_table(df):
-    """Avoid another dependency just to format a small report table."""
     rows = ["| " + " | ".join(df.columns) + " |", "| " + " | ".join(["---"] * len(df.columns)) + " |"]
     for row in df.itertuples(index=False, name=None):
         rows.append("| " + " | ".join(f"{v:.4f}" if isinstance(v, float) else str(v) for v in row) + " |")
@@ -136,7 +133,6 @@ def run(data_path=None, output=None, quick=False, seed=42, threads=2):
     cohort = clean_cohort(raw)
     excluded_rows = len(raw) - len(cohort)
     if quick:
-        # Sample whole patients, never individual rows from a patient's history.
         patients = cohort.patient_nbr.drop_duplicates().to_numpy()
         sampled = np.random.default_rng(seed).choice(patients, min(4000, len(patients)), replace=False)
         cohort = cohort[cohort.patient_nbr.isin(sampled)].reset_index(drop=True)
@@ -224,7 +220,6 @@ def run(data_path=None, output=None, quick=False, seed=42, threads=2):
             print(f"  CV AP={search.best_score_:.4f}; threshold={thresholds[name]:.4f}; "
                   f"{time.perf_counter() - model_started:.1f}s", flush=True)
 
-        # Freeze the winner and all thresholds BEFORE asking any model to predict test data.
         cv_summary = pd.DataFrame(summaries)
         selected = cv_summary.sort_values("cv_ap_mean", ascending=False).iloc[0]["model"]
         write_json(out / "selection.json", {"model": selected, "criterion": "training CV average precision",
@@ -262,7 +257,7 @@ def run(data_path=None, output=None, quick=False, seed=42, threads=2):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description="Train and compare readmission models.")
     parser.add_argument("--data", help="Existing UCI diabetic_data.csv; downloads if omitted")
     parser.add_argument("--output", help="New output directory (default: results or results_quick)")
     parser.add_argument("--quick", action="store_true", help="4,000 patients, 3 CV folds; not final results")

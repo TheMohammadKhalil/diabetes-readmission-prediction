@@ -1,5 +1,3 @@
-"""Small model families and deliberately modest hyperparameter grids."""
-
 import numpy as np
 from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.dummy import DummyClassifier
@@ -29,7 +27,6 @@ def make_preprocessor(dense=False):
 
 
 def model_specs(seed=42, quick=False):
-    """Every returned estimator includes its own fold-fitted preprocessing."""
     specs = {
         "majority_baseline": (DummyClassifier(strategy="prior"), {}),
         "logistic_regression": (

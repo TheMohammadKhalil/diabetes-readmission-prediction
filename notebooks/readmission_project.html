@@ -7852,7 +7852,7 @@ Joud Tutanji, Rakan Al-Shishani, Mohammad Khalil (names from the proposal).</p>
 <span class="n">RESULTS</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"results"</span>
 <span class="n">RUN_FULL_EXPERIMENT</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="k">if</span> <span class="n">RUN_FULL_EXPERIMENT</span><span class="p">:</span>
-    <span class="n">RESULTS</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"results_notebook"</span>  <span class="c1"># Must be a new directory.</span>
+    <span class="n">RESULTS</span> <span class="o">=</span> <span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"results_notebook"</span>
     <span class="n">run</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">RESULTS</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">RESULTS</span> <span class="o">/</span> <span class="s2">"report.md"</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s2">"Run `python run_experiment.py` first, or enable RUN_FULL_EXPERIMENT."</span><span class="p">)</span>
@@ -8176,7 +8176,7 @@ Eligible patients: 69,990; prepared features: 46
 <div class="jp-InputPrompt jp-InputArea-prompt">In [4]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
-<div class="highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">display</span><span class="p">(</span><span class="n">X_train</span><span class="o">.</span><span class="n">dtypes</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="s2">"type"</span><span class="p">)</span><span class="o">.</span><span class="n">to_frame</span><span class="p">())</span>
 <span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">RESULTS</span> <span class="o">/</span> <span class="s2">"training_missingness.csv"</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
 <span class="n">display</span><span class="p">(</span><span class="n">Image</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">RESULTS</span> <span class="o">/</span> <span class="s2">"eda.png"</span><span class="p">)))</span>
 </pre></div>
@@ -8209,153 +8209,196 @@ Eligible patients: 69,990; prepared features: 46
 <thead>
 <tr style="text-align: right;">
 <th></th>
-<th>time_in_hospital</th>
-<th>num_lab_procedures</th>
-<th>num_procedures</th>
-<th>num_medications</th>
-<th>number_outpatient</th>
-<th>number_emergency</th>
-<th>number_inpatient</th>
-<th>number_diagnoses</th>
-<th>race</th>
-<th>gender</th>
-<th>...</th>
-<th>insulin</th>
-<th>glyburide-metformin</th>
-<th>glipizide-metformin</th>
-<th>glimepiride-pioglitazone</th>
-<th>metformin-rosiglitazone</th>
-<th>metformin-pioglitazone</th>
-<th>change</th>
-<th>diabetesMed</th>
-<th>total_prior_visits</th>
-<th>num_medication_changes</th>
+<th>type</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<th>0</th>
-<td>1</td>
-<td>41</td>
-<td>0</td>
-<td>1</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>1</td>
-<td>Caucasian</td>
-<td>Female</td>
-<td>...</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>0</td>
-<td>0</td>
+<th>time_in_hospital</th>
+<td>int64</td>
 </tr>
 <tr>
-<th>1</th>
-<td>3</td>
-<td>59</td>
-<td>0</td>
-<td>18</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>9</td>
-<td>Caucasian</td>
-<td>Female</td>
-<td>...</td>
-<td>Up</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>Ch</td>
-<td>Yes</td>
-<td>0</td>
-<td>1</td>
+<th>num_lab_procedures</th>
+<td>int64</td>
 </tr>
 <tr>
-<th>3</th>
-<td>2</td>
-<td>44</td>
-<td>1</td>
-<td>16</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>7</td>
-<td>Caucasian</td>
-<td>Male</td>
-<td>...</td>
-<td>Up</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>Ch</td>
-<td>Yes</td>
-<td>0</td>
-<td>1</td>
+<th>num_procedures</th>
+<td>int64</td>
 </tr>
 <tr>
-<th>5</th>
-<td>3</td>
-<td>31</td>
-<td>6</td>
-<td>16</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>9</td>
-<td>Caucasian</td>
-<td>Male</td>
-<td>...</td>
-<td>Steady</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>Yes</td>
-<td>0</td>
-<td>0</td>
+<th>num_medications</th>
+<td>int64</td>
 </tr>
 <tr>
-<th>6</th>
-<td>4</td>
-<td>70</td>
-<td>1</td>
-<td>21</td>
-<td>0</td>
-<td>0</td>
-<td>0</td>
-<td>7</td>
-<td>Caucasian</td>
-<td>Male</td>
-<td>...</td>
-<td>Steady</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>No</td>
-<td>Ch</td>
-<td>Yes</td>
-<td>0</td>
-<td>0</td>
+<th>number_outpatient</th>
+<td>int64</td>
+</tr>
+<tr>
+<th>number_emergency</th>
+<td>int64</td>
+</tr>
+<tr>
+<th>number_inpatient</th>
+<td>int64</td>
+</tr>
+<tr>
+<th>number_diagnoses</th>
+<td>int64</td>
+</tr>
+<tr>
+<th>race</th>
+<td>object</td>
+</tr>
+<tr>
+<th>gender</th>
+<td>object</td>
+</tr>
+<tr>
+<th>age</th>
+<td>object</td>
+</tr>
+<tr>
+<th>admission_type_id</th>
+<td>object</td>
+</tr>
+<tr>
+<th>discharge_disposition_id</th>
+<td>object</td>
+</tr>
+<tr>
+<th>admission_source_id</th>
+<td>object</td>
+</tr>
+<tr>
+<th>payer_code</th>
+<td>object</td>
+</tr>
+<tr>
+<th>medical_specialty</th>
+<td>object</td>
+</tr>
+<tr>
+<th>diag_1</th>
+<td>object</td>
+</tr>
+<tr>
+<th>diag_2</th>
+<td>object</td>
+</tr>
+<tr>
+<th>diag_3</th>
+<td>object</td>
+</tr>
+<tr>
+<th>max_glu_serum</th>
+<td>object</td>
+</tr>
+<tr>
+<th>A1Cresult</th>
+<td>object</td>
+</tr>
+<tr>
+<th>metformin</th>
+<td>object</td>
+</tr>
+<tr>
+<th>repaglinide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>nateglinide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>chlorpropamide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glimepiride</th>
+<td>object</td>
+</tr>
+<tr>
+<th>acetohexamide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glipizide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glyburide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>tolbutamide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>pioglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>rosiglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>acarbose</th>
+<td>object</td>
+</tr>
+<tr>
+<th>miglitol</th>
+<td>object</td>
+</tr>
+<tr>
+<th>troglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>tolazamide</th>
+<td>object</td>
+</tr>
+<tr>
+<th>insulin</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glyburide-metformin</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glipizide-metformin</th>
+<td>object</td>
+</tr>
+<tr>
+<th>glimepiride-pioglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>metformin-rosiglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>metformin-pioglitazone</th>
+<td>object</td>
+</tr>
+<tr>
+<th>change</th>
+<td>object</td>
+</tr>
+<tr>
+<th>diabetesMed</th>
+<td>object</td>
+</tr>
+<tr>
+<th>total_prior_visits</th>
+<td>int64</td>
+</tr>
+<tr>
+<th>num_medication_changes</th>
+<td>int64</td>
 </tr>
 </tbody>
 </table>
-<p>5 rows × 46 columns</p>
 </div>
 </div>
 </div>
@@ -9034,7 +9077,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                                                                                  strategy='median')),
                                                                   ('scale',
                                                                    StandardScaler())]),
-                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x7cf26adfd130&gt;),
+                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x7e117d1cba70&gt;),
                                                  ('categorical',
                                                   Pipeline(steps=[('impute',
                                                                    SimpleImputer(fill_value='Missing',
@@ -9042,7 +9085,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
                                                                   ('encode',
                                                                    OneHotEncoder(dtype=&lt;class 'numpy.float32'&gt;,
                                                                                  handle_unknown='ignore'))]),
-                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x7cf26adfd070&gt;)])),
+                                                  &lt;sklearn.compose._column_transformer.make_column_selector object at 0x7e117d1cb860&gt;)])),
                 ('model',
                  LogisticRegression(max_iter=1000, random_state=42,
                                     solver='liblinear'))])</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br/>On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class="sk-container" hidden=""><div class="sk-item sk-dashed-wrapped"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-1" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-1"><div><div>Pipeline</div></div><div><a class="sk-estimator-doc-link" href="https://scikit-learn.org/1.7/modules/generated/sklearn.pipeline.Pipeline.html" rel="noreferrer" target="_blank">?<span>Documentation for Pipeline</span></a><span class="sk-estimator-doc-link">i<span>Not fitted</span></span></div></label><div class="sk-toggleable__content" data-param-prefix="">
@@ -9137,7 +9180,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
 </table>
 </details>
 </div>
-</div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-3"><div><div>numeric</div></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__numeric__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x7cf26adfd130&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-4"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link" href="https://scikit-learn.org/1.7/modules/generated/sklearn.impute.SimpleImputer.html" rel="noreferrer" target="_blank">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__numeric__impute__">
+</div></div></div><div class="sk-parallel"><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-3" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-3"><div><div>numeric</div></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__numeric__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x7e117d1cba70&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-4" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-4"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link" href="https://scikit-learn.org/1.7/modules/generated/sklearn.impute.SimpleImputer.html" rel="noreferrer" target="_blank">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__numeric__impute__">
 <div class="estimator-table">
 <details>
 <summary>Parameters</summary>
@@ -9211,7 +9254,7 @@ div.sk-label-container:hover .sk-estimator-doc-link.fitted:hover,
 </table>
 </details>
 </div>
-</div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-6"><div><div>categorical</div></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__categorical__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x7cf26adfd070&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-7"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link" href="https://scikit-learn.org/1.7/modules/generated/sklearn.impute.SimpleImputer.html" rel="noreferrer" target="_blank">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__categorical__impute__">
+</div></div></div></div></div></div></div></div><div class="sk-parallel-item"><div class="sk-item"><div class="sk-label-container"><div class="sk-label sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-6" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-6"><div><div>categorical</div></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__categorical__"><pre>&lt;sklearn.compose._column_transformer.make_column_selector object at 0x7e117d1cb860&gt;</pre></div></div></div><div class="sk-serial"><div class="sk-item"><div class="sk-serial"><div class="sk-item"><div class="sk-estimator sk-toggleable"><input class="sk-toggleable__control sk-hidden--visually" id="sk-estimator-id-7" type="checkbox"/><label class="sk-toggleable__label sk-toggleable__label-arrow" for="sk-estimator-id-7"><div><div>SimpleImputer</div></div><div><a class="sk-estimator-doc-link" href="https://scikit-learn.org/1.7/modules/generated/sklearn.impute.SimpleImputer.html" rel="noreferrer" target="_blank">?<span>Documentation for SimpleImputer</span></a></div></label><div class="sk-toggleable__content" data-param-prefix="preprocess__categorical__impute__">
 <div class="estimator-table">
 <details>
 <summary>Parameters</summary>
@@ -10134,7 +10177,7 @@ Training warnings: []
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="10.-Reuse-the-fitted-model">10. Reuse the fitted model<a class="anchor-link" href="#10.-Reuse-the-fitted-model">¶</a></h2><p>The saved artifact contains the fitted pipeline and validation-selected threshold. Apply the same deterministic feature preparation before prediction. This example uses five already evaluated test encounters for demonstration; it is not another performance estimate.</p>
+<h2 id="10.-Reuse-the-fitted-model">10. Reuse the fitted model<a class="anchor-link" href="#10.-Reuse-the-fitted-model">¶</a></h2><p>The saved artifact contains the fitted pipeline and validation-selected threshold. Apply the same deterministic feature preparation before prediction. This example uses the invented record in <code>examples/patient.csv</code>. It demonstrates prediction; it is not a performance estimate. You can also run <code>python test_model.py</code> to reproduce the held-out metrics, or add <code>--input examples/patient.csv</code> to try the sample from the terminal.</p>
 </div>
 </div>
 </div>
@@ -10147,11 +10190,9 @@ Training warnings: []
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">artifact</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">RESULTS</span> <span class="o">/</span> <span class="s2">"models/selected_model.joblib"</span><span class="p">)</span>
-<span class="n">example_encounters</span> <span class="o">=</span> <span class="n">cohort</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">test_idx</span><span class="p">[:</span><span class="mi">5</span><span class="p">]]</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s2">"readmitted"</span><span class="p">)</span>
-<span class="n">example_X</span> <span class="o">=</span> <span class="n">make_features</span><span class="p">(</span><span class="n">example_encounters</span><span class="p">)</span>
-<span class="n">probabilities</span> <span class="o">=</span> <span class="n">artifact</span><span class="p">[</span><span class="s2">"pipeline"</span><span class="p">]</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">example_X</span><span class="p">)[:,</span> <span class="mi">1</span><span class="p">]</span>
+<span class="n">example</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">ROOT</span> <span class="o">/</span> <span class="s2">"examples/patient.csv"</span><span class="p">,</span> <span class="n">keep_default_na</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="s2">"?"</span><span class="p">,</span> <span class="s2">""</span><span class="p">])</span>
+<span class="n">probabilities</span> <span class="o">=</span> <span class="n">artifact</span><span class="p">[</span><span class="s2">"pipeline"</span><span class="p">]</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">make_features</span><span class="p">(</span><span class="n">example</span><span class="p">))[:,</span> <span class="mi">1</span><span class="p">]</span>
 <span class="n">display</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s2">"encounter_id"</span><span class="p">:</span> <span class="n">example_encounters</span><span class="p">[</span><span class="s2">"encounter_id"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
     <span class="s2">"model_score"</span><span class="p">:</span> <span class="n">probabilities</span><span class="p">,</span>
     <span class="s2">"predicted_readmission"</span><span class="p">:</span> <span class="p">(</span><span class="n">probabilities</span> <span class="o">&gt;=</span> <span class="n">artifact</span><span class="p">[</span><span class="s2">"threshold"</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span>
 <span class="p">}))</span>
@@ -10164,14 +10205,6 @@ Training warnings: []
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/home/mohamad/Repos/ai-project/readmission/data.py:111: FutureWarning: Downcasting behavior in `replace` is deprecated and will be removed in a future version. To retain the old behavior, explicitly call `result.infer_objects(copy=False)`. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`
-  X = X.replace({"?": np.nan, "": np.nan})
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
@@ -10193,7 +10226,6 @@ Training warnings: []
 <thead>
 <tr style="text-align: right;">
 <th></th>
-<th>encounter_id</th>
 <th>model_score</th>
 <th>predicted_readmission</th>
 </tr>
@@ -10201,32 +10233,7 @@ Training warnings: []
 <tbody>
 <tr>
 <th>0</th>
-<td>64410</td>
-<td>0.118037</td>
-<td>0</td>
-</tr>
-<tr>
-<th>1</th>
-<td>16680</td>
-<td>0.069891</td>
-<td>0</td>
-</tr>
-<tr>
-<th>2</th>
-<td>63768</td>
-<td>0.077537</td>
-<td>0</td>
-</tr>
-<tr>
-<th>3</th>
-<td>89682</td>
-<td>0.089887</td>
-<td>0</td>
-</tr>
-<tr>
-<th>4</th>
-<td>148530</td>
-<td>0.091080</td>
+<td>0.10293</td>
 <td>0</td>
 </tr>
 </tbody>

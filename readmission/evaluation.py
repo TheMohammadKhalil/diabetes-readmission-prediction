@@ -1,5 +1,3 @@
-"""Metrics, validation-only threshold selection, and report figures."""
-
 import numpy as np
 import pandas as pd
 import matplotlib
@@ -15,12 +13,11 @@ from sklearn.metrics import (
 
 
 def choose_threshold(y, probabilities):
-    """Maximize positive-class F1 on training out-of-fold predictions only."""
     precision, recall, thresholds = precision_recall_curve(y, probabilities)
     f1 = 2 * precision[:-1] * recall[:-1] / np.maximum(
         precision[:-1] + recall[:-1], 1e-12
     )
-    # Resolve ties in favour of a higher (more conservative) threshold.
+
     best = np.flatnonzero(np.isclose(f1, f1.max(), rtol=0, atol=1e-12))[-1]
     return float(thresholds[best])
 
@@ -43,7 +40,6 @@ def compute_metrics(y, probabilities, threshold=0.5):
 
 
 def save_eda(raw_train, X_train, y_train, directory):
-    """Explore training records only, after setting aside the test patients."""
     missing = raw_train.isna().mean().sort_values(ascending=False)
     missing.rename("missing_fraction").to_csv(directory / "training_missingness.csv")
     X_train.describe(include="all").to_csv(directory / "training_feature_summary.csv")
@@ -109,7 +105,6 @@ def save_evaluation_plots(y, predictions, thresholds, test_results, directory):
 
 
 def save_importance(pipeline, directory):
-    """Forest impurity importance is descriptive, not causal or unbiased."""
     names = pipeline.named_steps["preprocess"].get_feature_names_out()
     importance = pipeline.named_steps["model"].feature_importances_
     table = pd.DataFrame({"feature": names, "importance": importance}).sort_values(

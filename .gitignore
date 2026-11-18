@@ -8,3 +8,10 @@ results*/models/
 results*/test_predictions.csv
 results*/train_oof_predictions.csv
 results*/split_membership.csv
+my_run/
+quick_check/
+predictions/
+docs/*.aux
+docs/*.log
+docs/*.out
+docs/*.synctex.gz
