@@ -1,0 +1,19 @@
+{
+  "status": "complete",
+  "quick": false,
+  "seed": 42,
+  "folds": 5,
+  "source_csv": "/home/mohamad/Repos/ai-project/data/raw/diabetic_data.csv",
+  "source_sha256": "0689e7ec031237dc63031b938805c48377748761a3b26acab621567afa24df97",
+  "started_utc": "2026-11-14T12:11:32.185369+00:00",
+  "versions": {
+    "python": "3.12.3",
+    "sklearn": "1.7.2",
+    "pandas": "2.3.3",
+    "numpy": "2.5.4"
+  },
+  "elapsed_seconds": 678.4141703579999,
+  "selected_model": "gradient_boosting",
+  "completed_utc": "2026-11-14T12:22:20.490150+00:00",
+  "warning_count": 0
+}

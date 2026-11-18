@@ -1,0 +1,12 @@
+,time_in_hospital,num_lab_procedures,num_procedures,num_medications,number_outpatient,number_emergency,number_inpatient,number_diagnoses,race,gender,age,admission_type_id,discharge_disposition_id,admission_source_id,payer_code,medical_specialty,diag_1,diag_2,diag_3,max_glu_serum,A1Cresult,metformin,repaglinide,nateglinide,chlorpropamide,glimepiride,acetohexamide,glipizide,glyburide,tolbutamide,pioglitazone,rosiglitazone,acarbose,miglitol,troglitazone,tolazamide,insulin,glyburide-metformin,glipizide-metformin,glimepiride-pioglitazone,metformin-rosiglitazone,metformin-pioglitazone,change,diabetesMed,total_prior_visits,num_medication_changes
+count,4479.0,4479.0,4479.0,4479.0,4479.0,4479.0,4479.0,4479.0,4370,4479,4479,4479,4479,4479,2691,2291,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479,4479.0,4479.0
+unique,,,,,,,,,5,3,10,7,16,12,16,43,10,10,10,4,4,4,3,3,2,4,1,4,4,1,4,4,3,2,1,2,4,2,2,1,1,1,2,2,,
+top,,,,,,,,,Caucasian,Female,[60-70),1,1,7,MC,InternalMedicine,Circulatory,Circulatory,Circulatory,None,None,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,No,Yes,,
+freq,,,,,,,,,3433,2390,1113,2301,2747,2495,1356,644,1371,1431,1361,4252,3727,3546,4409,4458,4475,4255,4479,3897,4010,4479,4167,4188,4458,4477,4479,4475,2154,4447,4474,4479,4479,4479,2454,3413,,
+mean,4.310560392944854,42.704398303192676,1.3431569546773834,15.850413038624692,0.3893726278187095,0.20004465282429112,0.570216566197812,7.380665327081938,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1.1596338468408127,0.28555481134181737
+std,2.94754689768071,20.04564144175474,1.7378152183313564,8.069397756673009,1.537308406424566,0.9996381648938009,1.164617844219815,1.9472708319635257,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,2.404535585091372,0.491048816986758
+min,1.0,1.0,0.0,1.0,0.0,0.0,0.0,1.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.0,0.0
+25%,2.0,31.0,0.0,10.0,0.0,0.0,0.0,6.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.0,0.0
+50%,4.0,44.0,1.0,15.0,0.0,0.0,0.0,8.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,0.0,0.0
+75%,6.0,57.0,2.0,20.0,0.0,0.0,1.0,9.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,1.0,1.0
+max,14.0,111.0,6.0,74.0,42.0,37.0,14.0,16.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,42.0,3.0

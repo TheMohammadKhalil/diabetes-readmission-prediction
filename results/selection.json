@@ -1,0 +1,13 @@
+{
+  "model": "gradient_boosting",
+  "criterion": "training CV average precision",
+  "thresholds": {
+    "majority_baseline": 0.5,
+    "logistic_regression": 0.12539198130542414,
+    "logistic_balanced": 0.5314901041903509,
+    "decision_tree": 0.550338544293873,
+    "random_forest": 0.4949932266788785,
+    "gradient_boosting": 0.13830884021002315,
+    "neural_network": 0.14530463875090668
+  }
+}

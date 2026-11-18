@@ -1,0 +1,13 @@
+{
+  "model": "logistic_regression",
+  "criterion": "training CV average precision",
+  "thresholds": {
+    "majority_baseline": 0.5,
+    "logistic_regression": 0.12121287163627854,
+    "logistic_balanced": 0.5877498249130808,
+    "decision_tree": 0.49393605292172044,
+    "random_forest": 0.4278445398684531,
+    "gradient_boosting": 0.10140070758411265,
+    "neural_network": 0.10201780729110053
+  }
+}

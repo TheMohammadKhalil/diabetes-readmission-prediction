@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ipynb_checkpoints/
+.cache/
+data/raw/*.csv
+results*/models/
+results*/test_predictions.csv
+results*/train_oof_predictions.csv
+results*/split_membership.csv

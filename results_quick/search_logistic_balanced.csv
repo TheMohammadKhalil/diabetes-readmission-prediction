@@ -1,0 +1,2 @@
+mean_fit_time,std_fit_time,mean_score_time,std_score_time,param_model__C,params,split0_test_ap,split1_test_ap,split2_test_ap,mean_test_ap,std_test_ap,rank_test_ap,split0_test_roc_auc,split1_test_roc_auc,split2_test_roc_auc,mean_test_roc_auc,std_test_roc_auc,rank_test_roc_auc
+0.05632146199544271,0.0006945373242399701,0.01880359649658203,0.000660419148515059,0.1,{'model__C': 0.1},0.16450005200807544,0.1779758766529373,0.16483631111023672,0.16910407992374984,0.006274809449906972,1,0.6089494347476467,0.5839298825256974,0.6302484611308141,0.6077092594680528,0.018929803785612435,1

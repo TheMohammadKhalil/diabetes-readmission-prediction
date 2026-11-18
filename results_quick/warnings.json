@@ -1,0 +1,7 @@
+[
+  {
+    "model": "neural_network",
+    "category": "ConvergenceWarning",
+    "message": "Stochastic Optimizer: Maximum iterations (40) reached and the optimization hasn't converged yet."
+  }
+]

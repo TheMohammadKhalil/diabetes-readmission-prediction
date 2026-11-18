@@ -1,0 +1,52 @@
+{
+  "raw_rows": 101766,
+  "excluded_rows": 2423,
+  "eligible_rows": 99343,
+  "train_rows": 79625,
+  "test_rows": 19718,
+  "train_patients": 55952,
+  "test_patients": 14038,
+  "patient_overlap": 0,
+  "test_fraction": 0.1984840401437444,
+  "train_positive_rate": 0.11461224489795918,
+  "test_positive_rate": 0.11096460087229942,
+  "folds": 5,
+  "seed": 42,
+  "cv": [
+    {
+      "fold": 1,
+      "fit_rows": 63760,
+      "validation_rows": 15865,
+      "patient_overlap": 0,
+      "validation_positive_rate": 0.11629372833280807
+    },
+    {
+      "fold": 2,
+      "fit_rows": 63715,
+      "validation_rows": 15910,
+      "patient_overlap": 0,
+      "validation_positive_rate": 0.11200502828409806
+    },
+    {
+      "fold": 3,
+      "fit_rows": 63696,
+      "validation_rows": 15929,
+      "patient_overlap": 0,
+      "validation_positive_rate": 0.11287588674744177
+    },
+    {
+      "fold": 4,
+      "fit_rows": 63682,
+      "validation_rows": 15943,
+      "patient_overlap": 0,
+      "validation_positive_rate": 0.11716740889418553
+    },
+    {
+      "fold": 5,
+      "fit_rows": 63647,
+      "validation_rows": 15978,
+      "patient_overlap": 0,
+      "validation_positive_rate": 0.11472024033045437
+    }
+  ]
+}
