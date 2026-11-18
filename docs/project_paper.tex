@@ -3,8 +3,9 @@
 \usepackage{amsmath,amssymb}
 \usepackage{newtxtext,newtxmath}
 \usepackage{graphicx}
+\usepackage{placeins}
+\usepackage{float}
 \usepackage{booktabs}
-\usepackage{balance}
 \usepackage{array}
 \usepackage{url}
 \usepackage[hidelinks]{hyperref}
@@ -45,7 +46,7 @@ Saito and Rehmsmeier \cite{saito} explain why precision--recall analysis is espe
 
 Table~\ref{tab:literature} provides context only. Different cohorts, splits, preprocessing choices, and metric conventions prevent a controlled ranking of these studies. No published pipeline was reimplemented, and the current test AUROC is not evidence of superiority over those studies.
 
-\begin{table}[t]
+\begin{table}[!t]
 \caption{Same-dataset literature context; protocols are not equivalent}
 \label{tab:literature}
 \centering
@@ -65,9 +66,16 @@ This project & Patient-disjoint holdout; grouped training CV & Boosting: 0.680 \
 \subsection{Dataset and Target}
 The source CSV contains 101,766 encounters, 47 candidate predictors, two identifiers, and one target. Its raw target counts are 11,357 for \texttt{<30}, 35,545 for \texttt{>30}, and 54,864 for \texttt{NO}. The public dataset covers care during 1999--2008 and is distributed under CC BY 4.0 \cite{uci}. Each row represents an encounter, not a unique patient.
 
-The inputs include demographics, admission and discharge codes, diagnoses, hospital-stay measurements, previous visits, laboratory results, medication fields, and treatment summaries. Table~\ref{tab:data} summarizes the analysis cohort and the fixed split. The test portion contains 2,188 positive encounters and 17,530 negatives, giving positive prevalence 11.10\%.
+The inputs include demographics, admission and discharge codes, diagnoses, hospital-stay measurements, previous visits, laboratory results, medication fields, and treatment summaries. Table~\ref{tab:data} summarizes the analysis cohort and the fixed split. The test portion contains 2,188 positive encounters and 17,530 negatives, giving positive prevalence 11.10\%. Figure~\ref{fig:balance} makes the imbalance visible: nearly nine in ten encounters belong to the negative class in both portions.
 
-\begin{table}[t]
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{class_balance.pdf}
+\caption{Class proportions after eligibility filtering and patient-group splitting. Training contains 9,126 positives; testing contains 2,188. Similar proportions do not imply shared patients.}
+\label{fig:balance}
+\end{figure}
+
+\begin{table}[!t]
 \caption{Cohort and fixed patient-disjoint split}
 \label{tab:data}
 \centering
@@ -97,18 +105,28 @@ Two simple features are added: total prior visits, the sum of prior inpatient, o
 
 Numerical features are median-imputed and standardized. Categorical features are imputed with a missing category and one-hot encoded, with unseen categories ignored at prediction time. All learned transformations are fitted inside each training pipeline. The deterministic cleaning and row-wise feature calculations do not estimate parameters from the full dataset. Exploratory summaries are produced from training records only.
 
+\FloatBarrier
 \section{Experimental Methodology}
 \subsection{Holdout and Cross-Validation}
 A seeded \texttt{StratifiedGroupKFold} with five splits is used to construct the outer holdout. The first fold is fixed as the test set, and the other four form training. This produces 80.15\% training encounters and 19.85\% testing encounters. An exact row ratio is not required because each patient's unequal number of encounters must remain together. Stratification attempts to preserve label proportions while respecting groups \cite{groupcv}.
 
 A separate stratified five-fold grouped splitter is then applied only to the training portion. Each training encounter appears in one validation fold. The same fold assignments are used for every model, and assertions verify zero overlap of patient IDs for the holdout and each cross-validation split. The folds are not selected according to favorable model scores.
 
+Figure~\ref{fig:workflow} summarizes this separation. Each orange block represents a different validation fold; the remaining blue blocks provide its fitting data. Preprocessing is fitted again inside each fold. The test branch is reserved until the model and cutoff have been fixed.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=0.94\textwidth]{workflow.pdf}
+\caption{From the original cohort to final evaluation. The five-fold grid is schematic: folds have slightly different sizes because all encounters from a patient stay together. OOF means out-of-fold predictions.}
+\label{fig:workflow}
+\end{figure*}
+
 \subsection{Models and Parameter Search}
 Table~\ref{tab:models} lists the seven configurations. The majority baseline returns the training positive fraction as its score and predicts the negative class at threshold 0.5. Ordinary and balanced logistic regression share an L2-regularized model and the same two candidate values of $C$. This makes the effect of class weighting easier to inspect.
 
 The decision tree and random forest use balanced class weights; the forest calculates them within bootstrap samples. Boosting and the MLP use the original class frequencies. Histogram gradient boosting provides an efficient scikit-learn boosting implementation without an additional learning framework. The MLP has one hidden layer containing 32 units, uses Adam with batches of 512, and trains for at most 100 epochs. Its stopping criterion uses training-loss improvement. Internal random-validation early stopping is disabled for both the MLP and boosting.
 
-\begin{table*}[t]
+\begin{table*}[!t]
 \caption{Model configurations and searched settings}
 \label{tab:models}
 \centering
@@ -155,36 +173,24 @@ BS = \frac{1}{N}\sum_{i=1}^{N}(p_i-y_i)^2.
 \end{equation}
 Lower Brier scores are better. Calibration curves compare mean predicted scores with observed positive fractions in eight quantile bins. No calibration model is fitted. Test metrics are reported at both 0.5 and the previously selected threshold.
 
+\FloatBarrier
 \section{Results}
 \subsection{Training Cross-Validation}
-The complete experiment ran in approximately 11.3 minutes in the recorded environment and produced no model-training warnings. Table~\ref{tab:cv} shows the training CV results. Histogram boosting achieved the highest AP, $0.2334\pm0.0070$, and was selected with 15 maximum leaves. The selected logistic configurations both used $C=0.1$, while the selected tree and forest depths were 8 and 18.
+The complete experiment ran in approximately 11.3 minutes in the recorded environment and produced no model-training warnings. Figure~\ref{fig:cv} shows the training CV results and the variation across folds. Histogram boosting achieved the highest AP, $0.2334\pm0.0070$, and was selected with 15 maximum leaves. The selected logistic configurations both used $C=0.1$, while the selected tree and forest depths were 8 and 18.
 
-\begin{table}[t]
-\caption{Training CV results for the selected settings}
-\label{tab:cv}
+\begin{figure}[H]
 \centering
-\footnotesize
-\begin{tabular}{lrrr}
-\toprule
-Model & Mean AP & AP std. & Mean AUROC \\
-\midrule
-Baseline & 0.1146 & 0.0020 & 0.5000 \\
-LR & 0.2166 & 0.0047 & 0.6627 \\
-Balanced LR & 0.2162 & 0.0051 & 0.6638 \\
-Decision tree & 0.2012 & 0.0089 & 0.6423 \\
-Random forest & 0.2143 & 0.0074 & 0.6678 \\
-Boosting & 0.2334 & 0.0070 & 0.6716 \\
-MLP & 0.2160 & 0.0063 & 0.6598 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=\columnwidth]{cv_comparison.pdf}
+\caption{Training CV average precision. Gray dots represent individual folds; squares and bars show the mean and one fold standard deviation, not a confidence interval. Green identifies the selected boosting model.}
+\label{fig:cv}
+\end{figure}
 
 The two logistic configurations obtained nearly identical AP, indicating that class weighting did not materially improve score ranking in this search. The single tree had lower AP than the other trained families. Random forest and the MLP did not surpass ordinary logistic regression on this primary development metric. These observations apply to the chosen small search spaces, not to every possible implementation of each family.
 
 \subsection{Held-Out Comparison}
 Table~\ref{tab:test} reports the untouched test results at validation-selected thresholds. Boosting obtained AUROC 0.6798 and AP 0.2386, compared with baseline values of 0.5000 and 0.1110. Its precision was 0.2111, recall 0.4593, and F1 0.2893. Its Brier score, 0.0932, was also the lowest among the evaluated configurations. Figure~\ref{fig:curves} shows the corresponding ROC and precision--recall curves.
 
-\begin{table*}[t]
+\begin{table*}[!t]
 \caption{Holdout performance at validation-selected thresholds; positive class is readmission within 30 days}
 \label{tab:test}
 \centering
@@ -204,7 +210,7 @@ MLP & 0.1453 & 0.6536 & 0.2163 & 0.7528 & 0.5996 & 0.1980 & 0.4027 & 0.2655 & 0.
 \end{tabular}
 \end{table*}
 
-\begin{figure*}[t]
+\begin{figure*}[!t]
 \centering
 \includegraphics[width=\textwidth]{roc_pr.pdf}
 \caption{Held-out ROC and precision--recall curves. The dashed precision reference is the test positive prevalence. Model and threshold selection used training data only.}
@@ -213,35 +219,40 @@ MLP & 0.1453 & 0.6536 & 0.2163 & 0.7528 & 0.5996 & 0.1980 & 0.4027 & 0.2655 & 0.
 
 The baseline correctly labelled all 17,530 negative encounters but detected none of the 2,188 positives. Its accuracy of 0.8890 is therefore not evidence of useful early-readmission detection. At the chosen threshold, boosting detected 1,005 positives and missed 1,183. It also produced 3,756 false positives. This corresponds to approximately one true readmission for every 4.7 positive predictions, illustrating the remaining practical limitations despite improvement over the baseline.
 
-\subsection{Effect of the Decision Threshold}
-Table~\ref{tab:threshold} isolates the cutoff effect for the same fitted boosting model. At 0.5, it detected only 35 positive encounters, giving recall 0.0160 and F1 0.0311. Lowering the cutoff to the training-selected 0.1383 increased recall to 0.4593 and F1 to 0.2893. The tradeoff was more false positives, lower precision, and lower overall accuracy. AUROC, AP, and Brier score did not change because the underlying probability scores were unchanged.
+Figure~\ref{fig:comparison} separates ranking quality from detection at a particular cutoff. Boosting has the highest AP, while the decision tree has slightly higher recall at its own saved cutoff. Recall alone does not account for false alarms, so it should be read alongside precision and F1 in Table~\ref{tab:test}.
 
-\begin{table}[t]
-\caption{Two operating points for the selected boosting model}
-\label{tab:threshold}
+\begin{figure*}[!t]
 \centering
-\begin{tabular}{lrr}
-\toprule
-Measure & Threshold 0.5 & Threshold 0.1383 \\
-\midrule
-True negatives & 17,500 & 13,774 \\
-False positives & 30 & 3,756 \\
-False negatives & 2,153 & 1,183 \\
-True positives & 35 & 1,005 \\
-Precision & 0.5385 & 0.2111 \\
-Recall & 0.0160 & 0.4593 \\
-F1 & 0.0311 & 0.2893 \\
-Accuracy & 0.8893 & 0.7495 \\
-\bottomrule
-\end{tabular}
-\end{table}
+\includegraphics[width=\textwidth]{test_comparison.pdf}
+\caption{Held-out average precision and recall at the saved training-selected cutoffs. The dashed line is the constant-score AP reference. Green marks the model selected using training CV, not a new selection using test scores.}
+\label{fig:comparison}
+\end{figure*}
+
+\subsection{Effect of the Decision Threshold}
+Figure~\ref{fig:tradeoff} shows how the boosting cutoff was developed using training OOF scores. Lower cutoffs generally increase recall while reducing precision. The selected value, 0.1383, maximizes F1 over the candidate OOF score cutoffs; the plotted curve samples this relationship for readability.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\columnwidth]{threshold_tradeoff.pdf}
+\caption{Precision, recall, and F1 against cutoff for boosting on training OOF predictions. Vertical lines identify the saved cutoff and 0.5. These development curves are distinct from the held-out results.}
+\label{fig:tradeoff}
+\end{figure}
+
+Figure~\ref{fig:confusions} isolates the cutoff effect on the held-out set for the same fitted boosting model. At 0.5, it detected only 35 positive encounters, giving recall 0.0160 and F1 0.0311. Lowering the cutoff to the training-selected 0.1383 increased recall to 0.4593 and F1 to 0.2893. The tradeoff was more false positives, lower precision, and lower overall accuracy. AUROC, AP, and Brier score did not change because the underlying probability scores were unchanged.
+
+\begin{figure*}[!t]
+\centering
+\includegraphics[width=\textwidth]{confusion_comparison.pdf}
+\caption{Test confusion matrices for the selected boosting model. Cells show encounter counts and percentages within each actual-class row, using the same color scale. Lowering the cutoff detects more positives but produces many more false alarms.}
+\label{fig:confusions}
+\end{figure*}
 
 Class weighting also changes the behavior at 0.5. Ordinary logistic regression had recall 0.0201, while balanced logistic regression had recall 0.5425. After their separately selected thresholds were applied, their recalls became 0.4771 and 0.4648, respectively, with very similar F1 scores. This demonstrates why class weighting and threshold choice should be discussed separately rather than attributing every change in recall to a different model family.
 
 \subsection{Calibration and Feature Importance}
 Figure~\ref{fig:calibration} compares raw score calibration. Balanced logistic regression and the weighted tree-based models tended to assign probabilities higher than the observed positive fractions. Balanced LR had Brier score 0.2247, compared with 0.0945 for ordinary LR. Weighting can change the probability scale even when ranking performance remains similar. These results support treating raw weighted scores cautiously and do not establish that any model is clinically calibrated.
 
-\begin{figure}[t]
+\begin{figure}[H]
 \centering
 \includegraphics[width=\columnwidth]{calibration.pdf}
 \caption{Quantile-binned calibration on the test set. The dashed diagonal indicates agreement between predicted probability and observed frequency.}
@@ -250,7 +261,7 @@ Figure~\ref{fig:calibration} compares raw score calibration. Balanced logistic r
 
 For a simple interpretation aid, Figure~\ref{fig:importance} displays the largest random-forest impurity importances. Prior inpatient visits and total prior visits ranked first and second, with importances 0.0952 and 0.0816. Laboratory procedures, medication count, discharge to home, and length of stay also appeared near the top. These are importances from the forest comparison model, not explanations of the selected boosting model. Correlated predictors can share importance, and impurity-based importance may favor variables with more possible splits. It does not identify causal effects.
 
-\begin{figure}[t]
+\begin{figure}[!t]
 \centering
 \includegraphics[width=\columnwidth]{importance.pdf}
 \caption{Eight highest random-forest impurity importances, using shortened display labels.}
@@ -287,10 +298,12 @@ This check verifies the dataset checksum, loads only the held-out encounters ide
 
 Protocol checks cover missing values, target validation, diagnosis boundaries, identifier exclusion, patient separation, training-only transformations, and metric behavior. The original 17 checks pass after removing code comments. The test utility has also been run against the stored full-data model and a clearly labelled synthetic input record. The synthetic input demonstrates the interface and contributes no observations to the research results.
 
+An \href{https://github.com/TheMohammadKhalil/diabetes-readmission-prediction/blob/main/docs/interactive_results.html}{offline interactive companion} accompanies the static PDF. Download \path{docs/interactive_results.html} from the repository and open it in a browser to inspect fold scores, switch the held-out comparison metric, and explore the training OOF cutoff tradeoff. The slider uses a 0.01 grid plus each model's exact saved cutoff. Only aggregate scores and confusion counts are embedded. Changing this control does not retune a model or alter the frozen test results. Figure sources and rebuilding instructions are provided in \texttt{docs/paper.md}.
+
 Source and supporting documentation are available at
 \url{https://github.com/TheMohammadKhalil/diabetes-readmission-prediction}.
 
-\balance
+\FloatBarrier
 \section{Conclusion}
 This project implemented a patient-disjoint comparison of standard classifiers for 30-day readmission using 99,343 eligible diabetic hospital encounters. An approximately 80/20 holdout and grouped five-fold training cross-validation produced a reproducible evaluation without sharing patients across splits. Histogram gradient boosting achieved the highest training AP and obtained test AUROC 0.6798, AP 0.2386, recall 0.4593, and F1 0.2893 at its validation-selected threshold.
 

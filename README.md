@@ -59,6 +59,7 @@ Accuracy alone is misleading here: predicting “no readmission” for everyone 
 ## Explore the project
 
 - [Project paper — IEEE-format PDF](docs/project_paper.pdf)
+- [Interactive graphs](docs/interactive_results.html) — download the file and open it in your browser
 - [How to test the model](docs/testing.md)
 - [Notebook walkthrough](notebooks/readmission_project.ipynb)
 - [Full results and plots](results/report.md)

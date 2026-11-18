@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diabetes readmission — explore the results</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7f9;color:#202e3b;font:16px/1.6 system-ui,sans-serif}main{max-width:1100px;margin:auto;padding:36px 24px 60px}h1{font-size:clamp(28px,5vw,42px);line-height:1.15;letter-spacing:-1px;margin:12px 0}h2{font-size:24px;margin:0 0 10px}p{max-width:850px;margin:12px 0}.eyebrow{color:#287b63;font-weight:700;letter-spacing:.07em;font-size:12px;text-transform:uppercase}.intro{font-size:18px;color:#526271}section{background:white;border:1px solid #dbe2e8;border-radius:12px;padding:24px;margin:24px 0}a{color:#245f91}label{font-weight:600;font-size:14px}select,button{font:inherit;padding:8px 12px;border:1px solid #b6c5d0;border-radius:6px;background:white;color:#202e3b}button{cursor:pointer}button:hover{background:#edf3f8}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #c66a22;outline-offset:3px}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:18px 0}.chart{width:100%;height:390px}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}.pair .chart{min-width:0;height:360px}.note{font-size:14px;color:#526271}.tag{display:inline-block;background:#e9f3ee;color:#226950;border-radius:4px;padding:2px 8px;font-size:13px;font-weight:600}.metrics{display:flex;gap:28px;flex-wrap:wrap;margin:18px 0}.metrics div{min-width:100px}.metrics dt{font-size:13px;color:#526271}.metrics dd{font-size:26px;font-weight:650;margin:0}.slider{flex:1;min-width:180px;accent-color:#287b63}output{font-variant-numeric:tabular-nums;font-weight:700}table{border-collapse:collapse;font-size:14px;margin:12px 0;width:100%}th,td{text-align:left;padding:8px;border-bottom:1px solid #dbe2e8}footer{font-size:14px;color:#526271}@media(max-width:650px){main{padding:20px 12px}section{padding:16px}.pair{grid-template-columns:1fr}.chart{height:360px}.metrics{gap:15px}select{max-width:100%}}
+</style>
+<script>__PLOTLY_LIBRARY__</script>
+</head>
+<body><main>
+<header><span class="eyebrow">A visual companion to our course paper</span>
+<h1>Understanding readmission predictions</h1>
+<p class="intro">See how we chose a model, what it achieved, and why changing the cutoff changes the predictions.</p>
+<p>99,343 eligible encounters · Seven model configurations · Patient-separated training and testing</p>
+<p><a href="https://github.com/TheMohammadKhalil/diabetes-readmission-prediction/blob/main/docs/project_paper.pdf">Read the paper online</a> · <a href="https://github.com/TheMohammadKhalil/diabetes-readmission-prediction">Project repository</a></p>
+<p class="note">This file works offline. Hover over points for details, select a measure, or move the cutoff slider. All values come from the completed experiment; no models are trained here.</p></header>
+<section aria-labelledby="cv-heading"><span class="tag">1 · Choose using training data</span>
+<h2 id="cv-heading">Which model performed best across five folds?</h2>
+<p>Average precision measures how well a model ranks the uncommon readmissions. Higher is better. Each gray dot is one validation fold; the square and bar show the mean and one standard deviation. Green marks the selected gradient boosting model.</p>
+<div id="cv-chart" class="chart" role="img" aria-label="Five-fold average precision comparison"></div>
+<p class="note">The bars show fold variation, not confidence intervals. Hyperparameters were selected using these same folds, so these are development estimates.</p></section>
+<section aria-labelledby="test-heading"><span class="tag">2 · Check on unseen patients</span>
+<h2 id="test-heading">How did the frozen models perform?</h2>
+<p>These results use the 19,718 held-out encounters. Each model uses its saved training-selected cutoff. Gradient boosting was chosen before seeing these results.</p>
+<div class="controls"><label for="metric">Compare</label><select id="metric"><option value="average_precision">Average precision</option><option value="roc_auc">ROC AUC</option><option value="precision">Precision</option><option value="recall">Recall</option><option value="f1">F1 score</option><option value="balanced_accuracy">Balanced accuracy</option><option value="brier_score">Brier score</option></select></div>
+<p id="metric-help" class="note" aria-live="polite"></p><div id="test-chart" class="chart" role="img" aria-label="Held-out model comparison"></div>
+<p class="note">The dashed average-precision reference is the 11.10% positive prevalence. Small model differences are not evidence of statistical significance.</p></section>
+<section aria-labelledby="threshold-heading"><span class="tag">3 · Explore training predictions</span>
+<h2 id="threshold-heading">What happens when we change the cutoff?</h2>
+<p>A score at or above the cutoff becomes a positive prediction. A lower cutoff usually catches more readmissions, but also flags more encounters that do not lead to early readmission.</p>
+<p><strong>Training out-of-fold predictions only — 79,625 encounters.</strong> Each score was produced while that patient's records were outside the fitted fold. Exploring here does not change the paper's fixed test results.</p>
+<div class="controls"><label for="model">Model</label><select id="model"></select><button id="saved" type="button">Saved cutoff</button><button id="default" type="button">Use 0.5</button></div>
+<div class="controls"><label for="cutoff">Cutoff</label><input id="cutoff" class="slider" type="range" min="0" step="1"><output id="cutoff-value" for="cutoff"></output></div>
+<p id="saved-note" class="note"></p>
+<dl class="metrics" aria-live="polite"><div><dt>Precision</dt><dd id="precision"></dd></div><div><dt>Recall</dt><dd id="recall"></dd></div><div><dt>F1 score</dt><dd id="f1"></dd></div></dl>
+<p class="note">Precision: how many flagged encounters are positive. Recall: how many actual positives are found. F1: a balance of both. Precision is displayed as zero when no encounters are flagged.</p>
+<div class="pair"><div id="tradeoff-chart" class="chart" role="img" aria-label="Training precision, recall, and F1 across cutoffs"></div><div id="confusion-chart" class="chart" role="img" aria-label="Training confusion matrix at the current cutoff"></div></div>
+<table aria-label="Training confusion counts"><thead><tr><th>Actual outcome</th><th>Predicted not within 30 days</th><th>Predicted within 30 days</th></tr></thead><tbody><tr><th>Not within 30 days</th><td id="tn"></td><td id="fp"></td></tr><tr><th>Within 30 days</th><td id="fn"></td><td id="tp"></td></tr></tbody></table>
+<p class="note">The slider uses steps of 0.01 plus the exact saved cutoff. The saved cutoff maximized F1 over all candidate training OOF cutoffs; the baseline keeps 0.5. Scores from these reused training folds can be optimistic. Matrix colors show percentages within each actual-outcome row.</p></section>
+<footer>Academic demonstration using the UCI Diabetes 130-US Hospitals dataset. These are aggregate research results, not a clinical decision tool. The companion contains no individual patient records.</footer>
+</main>
+<script>
+const data = __RESULT_DATA__;
+const names = Object.keys(data.names);
+const blue = '#356b9b', green = '#287b63', orange = '#c66a22';
+const config = {responsive:true, displayModeBar:false};
+const base = {font:{family:'system-ui, sans-serif',size:12,color:'#202e3b'},paper_bgcolor:'white',plot_bgcolor:'white',margin:{l:155,r:30,t:20,b:50},hovermode:'closest'};
+const model = document.getElementById('model');
+const cutoff = document.getElementById('cutoff');
+const metric = document.getElementById('metric');
+const fmt = n => n.toLocaleString('en-US');
+names.forEach(name => model.add(new Option(data.names[name],name)));
+model.value = data.selected;
+function cvChart(){
+const rows = names.map(name => data.cv.find(row=>row.model===name));
+return Plotly.newPlot('cv-chart',[
+{x:data.folds.map(r=>r.average_precision),y:data.folds.map(r=>data.names[r.model]),customdata:data.folds.map(r=>r.fold),type:'scatter',mode:'markers',marker:{color:'#a5aeb7',size:7},name:'Individual folds',hovertemplate:'%{y}<br>Fold %{customdata}<br>AP %{x:.4f}<extra></extra>'},
+{x:rows.map(r=>r.cv_ap_mean),y:names.map(n=>data.names[n]),type:'scatter',mode:'markers',error_x:{type:'data',array:rows.map(r=>r.cv_ap_std),visible:true,color:blue,thickness:1.5},marker:{symbol:'square',size:10,color:names.map(n=>n===data.selected?green:blue)},name:'Mean ± fold SD',hovertemplate:'%{y}<br>Mean AP %{x:.4f}<extra></extra>'}],
+{...base,xaxis:{title:{text:'Training CV average precision'},range:[.09,.27]},yaxis:{autorange:'reversed',categoryorder:'array',categoryarray:names.map(n=>data.names[n])},legend:{orientation:'h',y:1.15}},config);
+}
+function testChart(){
+const key=metric.value, rows=names.map(n=>data.test.find(r=>r.model===n&&r.operating_point==='validation_threshold'));
+const help={average_precision:'Higher is better. Summarizes precision across recall levels; the constant-score baseline equals positive prevalence.',roc_auc:'Higher is better. Measures ranking across thresholds; 0.5 corresponds to chance ranking.',precision:'Higher is better. Of flagged encounters, the fraction actually readmitted within 30 days.',recall:'Higher is better. The fraction of actual early readmissions detected.',f1:'Higher is better. Harmonic mean of precision and recall.',balanced_accuracy:'Higher is better. Average of positive-class recall and negative-class recall.',brier_score:'Lower is better. Mean squared error of the predicted probabilities.'};
+document.getElementById('metric-help').textContent=help[key];
+return Plotly.react('test-chart',[{x:rows.map(r=>r[key]),y:names.map(n=>data.names[n]),type:'bar',orientation:'h',marker:{color:names.map(n=>n===data.selected?green:blue)},text:rows.map(r=>r[key].toFixed(3)),textposition:'outside',cliponaxis:false,hovertemplate:'%{y}<br>%{x:.4f}<extra></extra>'}],{...base,xaxis:{title:{text:metric.selectedOptions[0].textContent},range:[0,Math.max(...rows.map(r=>r[key]))*1.16]},yaxis:{autorange:'reversed'},shapes:key==='average_precision'?[{type:'line',xref:'x',yref:'paper',x0:data.audit.test_positive_rate,x1:data.audit.test_positive_rate,y0:0,y1:1,line:{color:'#5e6872',dash:'dash',width:1}}]:[]},config);
+}
+function explore(){
+const curve=data.curves[model.value], i=Number(cutoff.value), value=curve.threshold[i];
+document.getElementById('cutoff-value').textContent=value.toFixed(4);
+cutoff.setAttribute('aria-valuetext',value.toFixed(4));
+document.getElementById('saved-note').textContent='Saved cutoff for '+data.names[model.value]+': '+data.saved[model.value].toFixed(4)+'.';
+['precision','recall','f1'].forEach(key=>document.getElementById(key).textContent=curve[key][i].toFixed(3));
+['tn','fp','fn','tp'].forEach(key=>document.getElementById(key).textContent=fmt(curve[key][i]));
+const matrix=[[curve.tn[i],curve.fp[i]],[curve.fn[i],curve.tp[i]]];
+const percent=matrix.map(row=>row.map(v=>100*v/(row[0]+row[1])));
+const annotations=[];
+matrix.forEach((row,r)=>row.forEach((v,c)=>annotations.push({x:c,y:r,text:fmt(v)+'<br>'+percent[r][c].toFixed(1)+'% of row',showarrow:false,font:{size:13,color:percent[r][c]>55?'white':'#202e3b'}})));
+return Promise.all([
+Plotly.react('tradeoff-chart',['precision','recall','f1'].map((key,j)=>({x:curve.threshold,y:curve[key],type:'scatter',mode:'lines',name:key==='f1'?'F1':key[0].toUpperCase()+key.slice(1),line:{color:[blue,orange,green][j]},hovertemplate:'Cutoff %{x:.4f}<br>%{y:.3f}<extra>%{fullData.name}</extra>'})),{...base,margin:{l:48,r:15,t:45,b:50},xaxis:{title:{text:'Cutoff'},range:[0,1]},yaxis:{title:{text:'Training OOF score'},range:[0,1.03]},legend:{orientation:'h',y:1.16},shapes:[{type:'line',x0:value,x1:value,y0:0,y1:1,line:{color:'#586571',dash:'dash',width:1.5}}]},config),
+Plotly.react('confusion-chart',[{z:percent,x:[0,1],y:[0,1],customdata:matrix,type:'heatmap',zmin:0,zmax:100,colorscale:[[0,'#f7fbff'],[.25,'#c6dbef'],[.5,'#6baed6'],[.75,'#2171b5'],[1,'#08306b']],showscale:false,hovertemplate:'%{customdata:,} encounters<br>%{z:.1f}% of actual class<extra></extra>'}],{...base,margin:{l:90,r:15,t:45,b:65},title:{text:'Training OOF confusion matrix',font:{size:14}},xaxis:{title:{text:'Predicted class'},tickvals:[0,1],ticktext:['Not <30','<30'],fixedrange:true},yaxis:{title:{text:'Actual class'},tickvals:[0,1],ticktext:['Not <30','<30'],autorange:'reversed',fixedrange:true},annotations},config)
+]);
+}
+function setCutoff(value){const curve=data.curves[model.value];cutoff.max=curve.threshold.length-1;cutoff.value=curve.threshold.reduce((best,v,i)=>Math.abs(v-value)<Math.abs(curve.threshold[best]-value)?i:best,0);return explore();}
+model.addEventListener('change',()=>setCutoff(data.saved[model.value]));
+cutoff.addEventListener('input',explore);
+document.getElementById('saved').addEventListener('click',()=>setCutoff(data.saved[model.value]));
+document.getElementById('default').addEventListener('click',()=>setCutoff(.5));
+metric.addEventListener('change',testChart);
+window.resultsReady=Promise.all([cvChart(),testChart(),setCutoff(data.saved[model.value])]);
+</script></body></html>

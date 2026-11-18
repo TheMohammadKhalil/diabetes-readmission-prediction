@@ -15,7 +15,7 @@ paper-replication experiments have been invented.
 
 ## Edit the paper
 
-The editable source is `project_paper.tex`. The three figures are in `figures/`.
+The editable source is `project_paper.tex`. The nine figures are in `figures/`.
 Upload the `.tex` file and that folder to an Overleaf project, then set
 `project_paper.tex` as the main document. The IEEEtran class is available in standard
 TeX distributions. The author names are taken from the proposal; add your department,
@@ -38,7 +38,44 @@ tectonic project_paper.tex
 
 The supplied PDF was built with Tectonic 0.17.0. LaTeX is needed only to rebuild the
 paper, not to train or test the Python models. The figures are vector PDFs made from
-the saved test predictions and forest importances.
+the saved split summaries, cross-validation results, predictions, and forest importances.
+
+## Explore the graphs
+
+The paper now illustrates the patient split and five-fold workflow, class imbalance,
+fold-by-fold model comparison, held-out model scores, threshold tradeoff, confusion
+matrices, ROC and precision–recall curves, calibration, and feature importance.
+Captions explain what each figure shows and whether it uses training or test data.
+
+[Download the interactive companion](interactive_results.html) using GitHub's
+**Download raw file** button, then open the downloaded HTML in your browser. After
+cloning the repository, you can simply open `docs/interactive_results.html`.
+GitHub's file preview does not run the controls. No server, Python installation,
+or internet connection is needed to explore the downloaded file.
+
+- Hover over validation scores to inspect individual folds.
+- Choose a metric to compare the frozen models on the held-out set.
+- Choose a model and move the cutoff slider to see precision, recall, F1, and
+  confusion counts change on **training out-of-fold predictions**.
+- Use **Saved cutoff** or **Use 0.5** to compare the two choices.
+
+The slider deliberately uses training predictions. It does not tune a threshold
+on test data or change the paper's reported results. Only aggregate results are
+included; no individual patient records are embedded.
+
+To rebuild the six new figures and the companion from the original local `results/`
+folder, activate the project environment and run from the repository root:
+
+```bash
+pip install -r docs/requirements.txt
+python docs/make_figures.py
+```
+
+The generator needs `results/train_oof_predictions.csv`, which stays local and is
+created by a full experiment. Cloning alone is enough to read the supplied figures
+and HTML, but not to regenerate them. `interactive_template.html` is the editable
+companion source; `figures/interactive_data.json` contains its aggregate chart data.
+The three original figures remain the exports from the completed experiment.
 
 ## Read alongside the paper
 
